@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>반응형 GitHub 페이지</title>
+    <!-- Tailwind CSS CDN 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 기본 폰트 설정 및 배경색 (Dark Mode Default) */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* GitHub Dark Mode 배경색과 유사 */
+            color: #c9d1d9;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        /* 스크롤바 커스터마이징 (선택 사항) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #30363d;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background-color: #161b22;
+        }
+        /* 섹션 패딩을 위한 커스텀 클래스 */
+        .section-padding {
+            padding: 4rem 1rem;
+        }
+        @media (min-width: 640px) {
+            .section-padding {
+                padding: 6rem 4rem;
+            }
+        }
+
+        /* -------------------------------------- */
+        /* Light Mode Styles (테마 토글 시 적용됨) */
+        /* -------------------------------------- */
+        body.light-mode {
+            background-color: #f6f8fa; /* GitHub Light Background */
+            color: #24292e; /* GitHub Dark Text */
+        }
+        /* Header in Light Mode */
+        .light-mode #navbar {
+            background-color: #ffffff;
+            border-color: #d1d5db;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        .light-mode #navbar a:not(.bg-gray-700) {
+            color: #24292e; /* Text color in light mode */
+        }
+        /* Scrollbar in Light Mode */
+        .light-mode ::-webkit-scrollbar-thumb {
+            background-color: #a0aec0;
+        }
+        .light-mode ::-webkit-scrollbar-track {
+            background-color: #edf2f7;
+        }
+        /* Section background in Light Mode */
+        .light-mode #home {
+            background: linear-gradient(to bottom right, #ffffff, #f1f3f6);
+        }
+        .light-mode #features, .light-mode #contact {
+            background-color: #ffffff;
+            border-color: #d1d5db;
+        }
+        .light-mode #interactive, .light-mode footer {
+            background-color: #f1f3f6;
+            border-color: #d1d5db;
+        }
+        .light-mode #interactive .border-t {
+             border-color: #d1d5db;
+        }
+        /* Text color adjustments in Light Mode */
+        .light-mode h1, .light-mode h2, .light-mode h3 {
+            color: #24292e;
+        }
+        .light-mode .text-gray-400 {
+            color: #586069; /* Slightly lighter text for contrast */
+        }
+        /* Feature Card in Light Mode */
+        .light-mode .feature-card {
+            background-color: #ffffff;
+            border-color: #d1d5db;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+        /* Interactive card background in Light Mode */
+        .light-mode #interactive .p-8 {
+            background-color: #ffffff;
+            border-color: #d1d5db;
+        }
+        .light-mode #click-count-display {
+            color: #24292e; /* 카운터 텍스트 색상 조정 */
+        }
+        /* Footer in Light Mode */
+        .light-mode footer {
+            background-color: #f6f8fa;
+        }
+        .light-mode footer p, .light-mode footer a {
+            color: #586069;
+        }
+    </style>
+    <!-- Inter 폰트 사용 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased">
+
+    <!-- 1. 네비게이션 바 (반응형) -->
+    <header id="navbar" class="sticky top-0 z-50 bg-[#161b22]/95 backdrop-blur-sm shadow-lg border-b border-[#30363d]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- 로고/사이트 이름 -->
+                <a href="#home" class="flex-shrink-0 text-xl font-bold text-green-400 hover:text-green-300 transition duration-300">
+                    <span role="img" aria-label="Rocket">🚀</span> My Project Hub
+                </a>
+
+                <!-- 데스크톱 메뉴 및 테마 토글 버튼 -->
+                <nav class="hidden md:flex space-x-6 items-center">
+                    <a href="#features" class="text-sm font-medium hover:text-white transition duration-300">핵심 기능</a>
+                    <a href="#interactive" class="text-sm font-medium hover:text-white transition duration-300">인터랙션</a>
+                    <a href="#contact" class="text-sm font-medium hover:text-white transition duration-300">문의하기</a>
+                    
+                    <!-- 테마 토글 버튼 (데스크톱) -->
+                    <button id="theme-toggle-desktop" class="p-2 rounded-full hover:bg-[#30363d] transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400" aria-label="Toggle Theme">
+                        <!-- Sun icon (Light mode) / Moon icon (Dark mode) -->
+                        <svg id="sun-icon-desktop" class="w-6 h-6 text-yellow-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="moon-icon-desktop" class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                    
+                    <a href="https://github.com/my-username" target="_blank" class="text-sm font-medium bg-gray-700 py-1.5 px-4 rounded-full hover:bg-gray-600 transition duration-300">
+                        GitHub 바로가기
+                    </a>
+                </nav>
+
+                <!-- 모바일 메뉴 버튼 및 테마 토글 버튼 (모바일) -->
+                <div class="flex items-center space-x-2 md:hidden">
+                    <button id="theme-toggle-mobile" class="p-2 rounded-md hover:bg-[#30363d] transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400" aria-label="Toggle Theme">
+                         <svg id="sun-icon-mobile" class="w-6 h-6 text-yellow-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="moon-icon-mobile" class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                    
+                    <button id="mobile-menu-button" class="p-2 rounded-md hover:bg-[#30363d] transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400" aria-label="Toggle Menu">
+                        <!-- 아이콘 (햄버거/닫기) -->
+                        <svg id="menu-icon" class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                        <svg id="close-icon" class="w-6 h-6 text-green-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 모바일 메뉴 내용 -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-[#30363d]">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-[#30363d] transition duration-300">핵심 기능</a>
+                <a href="#interactive" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-[#30363d] transition duration-300">인터랙션</a>
+                <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-[#30363d] transition duration-300">문의하기</a>
+                <a href="https://github.com/my-username" target="_blank" class="block text-center mt-2 w-full py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition duration-300">
+                    GitHub 바로가기
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. 히어로 섹션 (홈) -->
+    <section id="home" class="section-padding bg-gradient-to-br from-[#0d1117] to-[#161b22] min-h-[60vh] flex items-center justify-center text-center">
+        <div class="max-w-4xl px-4">
+            <h1 class="text-4xl sm:text-6xl font-extrabold mb-4 leading-tight">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">최신 웹 기술</span>로 구축된 반응형 프로젝트
+            </h1>
+            <p class="text-lg sm:text-xl mb-8 text-gray-400">
+                GitHub 페이지에 최적화된 모던하고 빠른 랜딩 페이지 템플릿입니다. 모든 기기에서 완벽한 사용자 경험을 제공합니다.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="#features" class="cta-button bg-green-600 hover:bg-green-700 focus:ring-green-500">
+                    자세히 보기
+                </a>
+                <a href="https://github.com/my-username/my-repo" target="_blank" class="cta-button bg-gray-700 hover:bg-gray-600 focus:ring-gray-500">
+                    코드 확인하기
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. 핵심 기능 섹션 -->
+    <section id="features" class="section-padding bg-[#161b22]">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center mb-12 text-white">
+                우리세상 💪
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature Card 1 -->
+                <div class="feature-card">
+                    <div class="icon-bg bg-blue-500/20 text-blue-400">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L12 21M12 21L14.25 17M12 21V3"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-white">완벽한 반응성</h3>
+                    <p class="text-gray-400">모바일, 태블릿, 데스크톱 등 어떤 화면에서도 레이아웃이 깨지지 않고 최적화되어 표시됩니다.</p>
+                </div>
+
+                <!-- Feature Card 2 -->
+                <div class="feature-card">
+                    <div class="icon-bg bg-green-500/20 text-green-400">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-white">초경량, 고성능</h3>
+                    <p class="text-gray-400">외부 파일 없이 단일 HTML 파일로 구성되어 로딩 속도가 빠르며 GitHub Pages에 적합합니다.</p>
+                </div>
+
+                <!-- Feature Card 3 -->
+                <div class="feature-card">
+                    <div class="icon-bg bg-purple-500/20 text-purple-400">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l-4 4l4 4M6 16l4-4l-4-4"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 text-white">직관적인 코드</h3>
+                    <p class="text-gray-400">Tailwind CSS를 사용하여 클래스 이름만으로 쉽게 디자인을 수정하고 확장할 수 있습니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 인터랙티브 섹션 (간단한 상태 관리 예시) -->
+    <section id="interactive" class="section-padding bg-[#0d1117] border-t border-[#30363d]">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl sm:text-4xl font-bold mb-4 text-white">
+                간단한 상호작용 예시
+            </h2>
+            <p class="text-lg mb-8 text-gray-400">
+                JavaScript를 이용한 사용자 인터랙션 및 상태 변경 기능을 확인해보세요.
+            </p>
+
+            <div class="p-8 bg-[#161b22] rounded-xl shadow-2xl border border-[#30363d]">
+                <h3 class="text-xl font-semibold mb-6 text-green-400">클릭 횟수 카운터</h3>
+                <p id="click-count-display" class="text-6xl font-extrabold mb-6 text-white transition-colors duration-300">0</p>
+                <button id="increment-button" class="px-8 py-3 text-lg font-bold rounded-full bg-blue-600 text-white shadow-lg transition duration-300 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 active:scale-95">
+                    카운트 증가!
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 문의 및 CTA 섹션 -->
+    <section id="contact" class="section-padding bg-[#161b22] border-t border-[#30363d]">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl sm:text-4xl font-bold mb-4 text-white">
+                지금 바로 시작하세요
+            </h2>
+            <p class="text-lg mb-8 text-gray-400">
+                이 템플릿을 포크하여 자신만의 멋진 GitHub 페이지를 몇 분 만에 배포하세요.
+            </p>
+            <a href="https://github.com/my-username" target="_blank" class="inline-flex items-center px-10 py-4 text-xl font-bold rounded-xl bg-green-500 text-gray-900 shadow-xl transition duration-300 hover:bg-green-400 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50">
+                <svg class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.803 8.207 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.04 3.633 17.17 3.633 17.17c-1.087-.744.084-.73.084-.73 1.205.084 1.838 1.237 1.838 1.237 1.07 1.835 2.809 1.305 3.493.998.108-.77.42-.87.762-1.07-2.671-.304-5.467-1.334-5.467-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3.123 2.502-.685 5.253-.685 7.756 0 2.295.445 3.3.123 3.3.123.645 1.653.24 2.873.105 3.176.77.84 1.235 1.91 1.235 3.22 0 4.609-2.8 5.624-5.474 5.922.43.37.81 1.096.81 2.219 0 1.604-.015 2.896-.015 3.286 0 .32.21.696.825.57C20.565 21.82 24 17.314 24 12c0-6.627-5.373-12-12-12z"></path></svg>
+                GitHub에서 포크하기
+            </a>
+        </div>
+    </section>
+
+    <!-- 6. 푸터 -->
+    <footer class="bg-[#0d1117] border-t border-[#30363d] py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            <p>&copy; 2024 My Project Hub. All rights reserved.</p>
+            <div class="mt-4 space-x-4">
+                <a href="#" class="hover:text-gray-300 transition duration-300">개인정보처리방침</a>
+                <a href="#" class="hover:text-gray-300 transition duration-300">이용약관</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript 로직 -->
+    <script>
+        // DOMContentLoaded: HTML 문서가 완전히 로드된 후 스크립트를 실행합니다.
+        document.addEventListener('DOMContentLoaded', () => {
+            const navbar = document.getElementById('navbar');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            const closeIcon = document.getElementById('close-icon');
+            const incrementButton = document.getElementById('increment-button');
+            const clickCountDisplay = document.getElementById('click-count-display');
+            let clickCount = 0;
+
+            // 테마 토글 버튼 요소들
+            const themeToggleDesktop = document.getElementById('theme-toggle-desktop');
+            const sunIconDesktop = document.getElementById('sun-icon-desktop');
+            const moonIconDesktop = document.getElementById('moon-icon-desktop');
+
+            const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+            const sunIconMobile = document.getElementById('sun-icon-mobile');
+            const moonIconMobile = document.getElementById('moon-icon-mobile');
+            
+            // 1. 테마 토글 및 로직
+            const setTheme = (theme) => {
+                if (theme === 'light') {
+                    document.body.classList.add('light-mode');
+                    // 데스크톱 아이콘
+                    sunIconDesktop.classList.remove('hidden');
+                    moonIconDesktop.classList.add('hidden');
+                    // 모바일 아이콘
+                    sunIconMobile.classList.remove('hidden');
+                    moonIconMobile.classList.add('hidden');
+                } else {
+                    document.body.classList.remove('light-mode');
+                    // 데스크톱 아이콘
+                    sunIconDesktop.classList.add('hidden');
+                    moonIconDesktop.classList.remove('hidden');
+                    // 모바일 아이콘
+                    sunIconMobile.classList.add('hidden');
+                    moonIconMobile.classList.remove('hidden');
+                }
+                // 브라우저에 테마 저장
+                localStorage.setItem('theme', theme);
+            };
+
+            // 페이지 로드 시 저장된 테마 적용 (기본값: dark)
+            const preferredTheme = localStorage.getItem('theme') || 'dark';
+            setTheme(preferredTheme);
+
+            // 데스크톱 토글 버튼 클릭 핸들러
+            themeToggleDesktop.addEventListener('click', () => {
+                const currentTheme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                setTheme(newTheme);
+            });
+            
+            // 모바일 토글 버튼 클릭 핸들러
+            themeToggleMobile.addEventListener('click', () => {
+                const currentTheme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                setTheme(newTheme);
+            });
+
+
+            // 2. 모바일 메뉴 토글 기능
+            mobileMenuButton.addEventListener('click', () => {
+                const isMenuOpen = !mobileMenu.classList.toggle('hidden');
+                
+                // 아이콘 전환
+                menuIcon.classList.toggle('hidden', !isMenuOpen);
+                closeIcon.classList.toggle('hidden', isMenuOpen);
+            });
+            
+            // 모바일 메뉴 링크 클릭 시 메뉴 닫기 및 스크롤 이동
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    menuIcon.classList.remove('hidden');
+                    closeIcon.classList.add('hidden');
+                });
+            });
+
+
+            // 3. 부드러운 스크롤링 기능 (CTA 및 Navbar 링크)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                         // 네비게이션 바의 높이를 고려하여 스크롤 위치 조정
+                        const offset = navbar.offsetHeight + 10; 
+                        window.scrollTo({
+                            top: targetElement.offsetTop - offset,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // 4. 인터랙티브 카운터 기능
+            incrementButton.addEventListener('click', () => {
+                clickCount++;
+                clickCountDisplay.textContent = clickCount;
+                
+                // 상태 변화에 따른 스타일 변경 예시 (클릭할 때마다 색상 변경)
+                const colors = ['#22c55e', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                clickCountDisplay.style.color = randomColor;
+
+                // 잠시 후 원래 색상으로 복구 (CSS Transition 덕분에 부드럽게 복구됨)
+                setTimeout(() => {
+                    // 현재 테마에 맞는 색상으로 복구
+                     clickCountDisplay.style.color = document.body.classList.contains('light-mode') ? '#24292e' : '#fff';
+                }, 150);
+            });
+
+            // 5. 스크롤 시 네비게이션 바 그림자 추가 (시각적 개선)
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 0) {
+                    navbar.classList.add('shadow-xl', 'border-opacity-10');
+                } else {
+                    navbar.classList.remove('shadow-xl', 'border-opacity-10');
+                }
+            });
+
+        });
+    </script>
+
+    <!-- 커스텀 스타일 정의 (HTML 내부에 CSS 스타일 정의) -->
+    <style>
+        .cta-button {
+            @apply inline-flex justify-center items-center py-3 px-6 text-base font-bold text-white rounded-lg shadow-lg transition duration-300 focus:outline-none focus:ring-4 focus:ring-opacity-50 active:scale-95;
+        }
+        
+        .feature-card {
+            @apply p-6 bg-[#1f242c] border border-[#30363d] rounded-xl shadow-xl hover:shadow-green-500/10 transition duration-300;
+        }
+        .light-mode .feature-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* 라이트 모드에서는 옅은 그림자로 변경 */
+        }
+
+
+        .icon-bg {
+            @apply flex items-center justify-center w-12 h-12 mb-4 rounded-full;
+        }
+    </style>
+</body>
+</html>
