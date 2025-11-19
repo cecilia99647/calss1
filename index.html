@@ -48,7 +48,7 @@
             border-color: #d1d5db;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
-        .light-mode #navbar a:not(.bg-gray-700) {
+        .light-mode #navbar a:not(.bg-gray-700, .bg-green-500) {
             color: #24292e; /* Text color in light mode */
         }
         /* Scrollbar in Light Mode */
@@ -120,6 +120,10 @@
                 <nav class="hidden md:flex space-x-6 items-center">
                     <a href="#features" class="text-sm font-medium hover:text-white transition duration-300">핵심 기능</a>
                     <a href="#interactive" class="text-sm font-medium hover:text-white transition duration-300">인터랙션</a>
+                    <!-- 새로 추가된 외부 QR 코드 페이지 링크 -->
+                    <a href="https://cecilia99647.github.io/calss1/qr.html" target="_blank" class="text-sm font-medium text-purple-400 hover:text-purple-300 transition duration-300">
+                        QR 코드 페이지
+                    </a>
                     <a href="#contact" class="text-sm font-medium hover:text-white transition duration-300">문의하기</a>
                     
                     <!-- 테마 토글 버튼 (데스크톱) -->
@@ -159,6 +163,10 @@
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-[#30363d] transition duration-300">핵심 기능</a>
                 <a href="#interactive" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-[#30363d] transition duration-300">인터랙션</a>
+                <!-- 새로 추가된 외부 QR 코드 페이지 링크 -->
+                <a href="https://cecilia99647.github.io/calss1/qr.html" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium text-purple-400 hover:bg-[#30363d] transition duration-300">
+                    QR 코드 페이지
+                </a>
                 <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-[#30363d] transition duration-300">문의하기</a>
                 <a href="https://github.com/my-username" target="_blank" class="block text-center mt-2 w-full py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition duration-300">
                     GitHub 바로가기
@@ -191,7 +199,7 @@
     <section id="features" class="section-padding bg-[#161b22]">
         <div class="max-w-7xl mx-auto">
             <h2 class="text-3xl sm:text-4xl font-bold text-center mb-12 text-white">
-                우리세상 💪
+                우리의 강점 💪
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Feature Card 1 -->
@@ -345,7 +353,7 @@
             });
             
             // 모바일 메뉴 링크 클릭 시 메뉴 닫기 및 스크롤 이동
-            document.querySelectorAll('#mobile-menu a').forEach(link => {
+            document.querySelectorAll('#mobile-menu a[href^="#"]').forEach(link => {
                 link.addEventListener('click', () => {
                     mobileMenu.classList.add('hidden');
                     menuIcon.classList.remove('hidden');
@@ -354,21 +362,24 @@
             });
 
 
-            // 3. 부드러운 스크롤링 기능 (CTA 및 Navbar 링크)
+            // 3. 부드러운 스크롤링 기능 (CTA 및 Navbar 내부 링크)
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    
-                    if (targetElement) {
-                         // 네비게이션 바의 높이를 고려하여 스크롤 위치 조정
-                        const offset = navbar.offsetHeight + 10; 
-                        window.scrollTo({
-                            top: targetElement.offsetTop - offset,
-                            behavior: 'smooth'
-                        });
+                    // 외부 링크는 제외하고 내부 링크만 부드러운 스크롤 적용
+                    if (this.getAttribute('target') !== '_blank') {
+                        e.preventDefault();
+                        
+                        const targetId = this.getAttribute('href');
+                        const targetElement = document.querySelector(targetId);
+                        
+                        if (targetElement) {
+                             // 네비게이션 바의 높이를 고려하여 스크롤 위치 조정
+                            const offset = navbar.offsetHeight + 10; 
+                            window.scrollTo({
+                                top: targetElement.offsetTop - offset,
+                                behavior: 'smooth'
+                            });
+                        }
                     }
                 });
             });
